@@ -52,20 +52,22 @@ func BenchmarkScaleGo(b *testing.B) {
 		panic(err)
 	}
 
-	i, err := r.Instance(nil)
-	if err != nil {
-		panic(err)
-	}
-
 	b.Run("match_regex", func(b *testing.B) {
-		i.Context().Data = "peach"
+		for j := 0; j < b.N; j++ {
+			i, err := r.Instance(nil)
+			if err != nil {
+				panic(err)
+			}
 
-		if err := i.Run(context.Background()); err != nil {
-			panic(err)
-		}
+			i.Context().Data = "peach"
 
-		if i.Context().Data != "peach" {
-			panic("invalid regex match")
+			if err := i.Run(context.Background()); err != nil {
+				panic(err)
+			}
+
+			if i.Context().Data != "peach" {
+				panic("invalid regex match")
+			}
 		}
 	})
 }
@@ -116,33 +118,37 @@ func BenchmarkScaleRust(b *testing.B) {
 		panic(err)
 	}
 
-	i, err := r.Instance(nil)
-	if err != nil {
-		panic(err)
-	}
-
 	b.Run("match_regex", func(b *testing.B) {
-		i.Context().Data = "peach"
+		for j := 0; j < b.N; j++ {
+			i, err := r.Instance(nil)
+			if err != nil {
+				panic(err)
+			}
 
-		if err := i.Run(context.Background()); err != nil {
-			panic(err)
-		}
+			i.Context().Data = "peach"
 
-		if i.Context().Data != "peach" {
-			panic("invalid regex match")
+			if err := i.Run(context.Background()); err != nil {
+				panic(err)
+			}
+
+			if i.Context().Data != "peach" {
+				panic("invalid regex match")
+			}
 		}
 	})
 }
 
 func BenchmarkNativeGo(b *testing.B) {
 	b.Run("match_regex", func(b *testing.B) {
-		matches, err := regex.FindString("peach")
-		if err != nil {
-			panic(err)
-		}
+		for j := 0; j < b.N; j++ {
+			matches, err := regex.FindString("peach")
+			if err != nil {
+				panic(err)
+			}
 
-		if matches != "peach" {
-			panic("invalid regex match")
+			if matches != "peach" {
+				panic("invalid regex match")
+			}
 		}
 	})
 }
@@ -167,18 +173,20 @@ func BenchmarkExtismRust(b *testing.B) {
 	}
 
 	b.Run("match_regex", func(b *testing.B) {
-		out, err := plugin.Call("match_regex", []byte("peach"))
-		if err != nil {
-			panic(err)
-		}
+		for j := 0; j < b.N; j++ {
+			out, err := plugin.Call("match_regex", []byte("peach"))
+			if err != nil {
+				panic(err)
+			}
 
-		var dst existmOutput
-		if json.Unmarshal(out, &dst); err != nil {
-			panic(err)
-		}
+			var dst existmOutput
+			if json.Unmarshal(out, &dst); err != nil {
+				panic(err)
+			}
 
-		if dst.Matches != "peach" {
-			panic("invalid regex match")
+			if dst.Matches != "peach" {
+				panic("invalid regex match")
+			}
 		}
 	})
 }
