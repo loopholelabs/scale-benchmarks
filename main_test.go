@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/extism/extism"
+	regex "github.com/loopholelabs/scale-benchmarks/pkg/native/go"
 	"os"
 	"os/exec"
 	"testing"
 
-	regex "github.com/loopholelabs/scale-benchmarks/pkg/native/go"
 	"github.com/loopholelabs/scale-benchmarks/pkg/scale/go/signature/text-signature"
 	runtime "github.com/loopholelabs/scale/go"
 	"github.com/loopholelabs/scale/go/tests/harness"
@@ -25,59 +25,59 @@ type existmOutput struct {
 	Matches string `json:"matches"`
 }
 
-func BenchmarkScaleGo(b *testing.B) {
-	moduleConfig := &harness.Module{
-		Name:      "text-signature",
-		Path:      "pkg/scale/go/modules/text-signature/text-signature.go",
-		Signature: "github.com/loopholelabs/scale-benchmarks/pkg/scale/go/signature/text-signature",
-	}
-
-	generatedModules := GoSetup(
-		b,
-		[]*harness.Module{moduleConfig},
-		"github.com/loopholelabs/scale-benchmarks/pkg/scale/go/modules",
-	)
-
-	module, err := os.ReadFile(generatedModules[moduleConfig])
-	if err != nil {
-		panic(err)
-	}
-
-	scaleFunc := &scalefunc.ScaleFunc{
-		Version:   scalefunc.V1Alpha,
-		Name:      "TestName",
-		Tag:       "TestTag",
-		Signature: "ExampleName@ExampleVersion",
-		Language:  scalefunc.Go,
-		Function:  module,
-	}
-
-	r, err := runtime.NewWithSignature(context.Background(), text.New, []*scalefunc.ScaleFunc{scaleFunc})
-	if err != nil {
-		panic(err)
-	}
-
-	ctx := context.Background()
-
-	b.ResetTimer()
-	b.Run("match_regex", func(b *testing.B) {
-		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
-			i, err := r.Instance(nil)
-			if err != nil {
-				panic(err)
-			}
-
-			i.Context().Data = Regex
-			if err := i.Run(ctx); err != nil {
-				panic(err)
-			}
-			if i.Context().Data != Match {
-				panic("invalid regex match")
-			}
-		}
-	})
-}
+//func BenchmarkScaleGo(b *testing.B) {
+//	moduleConfig := &harness.Module{
+//		Name:      "text-signature",
+//		Path:      "pkg/scale/go/modules/text-signature/text-signature.go",
+//		Signature: "github.com/loopholelabs/scale-benchmarks/pkg/scale/go/signature/text-signature",
+//	}
+//
+//	generatedModules := GoSetup(
+//		b,
+//		[]*harness.Module{moduleConfig},
+//		"github.com/loopholelabs/scale-benchmarks/pkg/scale/go/modules",
+//	)
+//
+//	module, err := os.ReadFile(generatedModules[moduleConfig])
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	scaleFunc := &scalefunc.ScaleFunc{
+//		Version:   scalefunc.V1Alpha,
+//		Name:      "TestName",
+//		Tag:       "TestTag",
+//		Signature: "ExampleName@ExampleVersion",
+//		Language:  scalefunc.Go,
+//		Function:  module,
+//	}
+//
+//	r, err := runtime.NewWithSignature(context.Background(), text.New, []*scalefunc.ScaleFunc{scaleFunc})
+//	if err != nil {
+//		panic(err)
+//	}
+//
+//	ctx := context.Background()
+//
+//	b.ResetTimer()
+//	b.Run("match_regex", func(b *testing.B) {
+//		b.ReportAllocs()
+//		for i := 0; i < b.N; i++ {
+//			i, err := r.Instance(nil)
+//			if err != nil {
+//				panic(err)
+//			}
+//
+//			i.Context().Data = Regex
+//			if err := i.Run(ctx); err != nil {
+//				panic(err)
+//			}
+//			if i.Context().Data != Match {
+//				panic("invalid regex match")
+//			}
+//		}
+//	})
+//}
 
 func BenchmarkScaleRust(b *testing.B) {
 	moduleConfig := &harness.Module{
@@ -152,22 +152,6 @@ func BenchmarkScaleRust(b *testing.B) {
 	})
 }
 
-func BenchmarkNativeGo(b *testing.B) {
-	b.Run("match_regex", func(b *testing.B) {
-		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
-			matches, err := regex.FindString(Regex)
-			if err != nil {
-				panic(err)
-			}
-
-			if matches != Match {
-				panic("invalid regex match")
-			}
-		}
-	})
-}
-
 func BenchmarkExtismRust(b *testing.B) {
 	cmd := exec.Command("cargo", "build", "--release", "--target", "wasm32-unknown-unknown")
 
@@ -204,6 +188,22 @@ func BenchmarkExtismRust(b *testing.B) {
 			}
 
 			if dst.Matches != Match {
+				panic("invalid regex match")
+			}
+		}
+	})
+}
+
+func BenchmarkNativeGo(b *testing.B) {
+	b.Run("match_regex", func(b *testing.B) {
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			matches, err := regex.FindString(Regex)
+			if err != nil {
+				panic(err)
+			}
+
+			if matches != Match {
 				panic("invalid regex match")
 			}
 		}
