@@ -2,7 +2,10 @@ use polyglot_rs::{Decoder, Encoder};
 use std::io::Cursor;
 
 pub trait Encode {
-    fn encode(self, b: &mut Cursor<Vec<u8>>) -> Result<&mut Cursor<Vec<u8>>, Box<dyn std::error::Error>>;
+    fn encode(
+        self,
+        b: &mut Cursor<Vec<u8>>,
+    ) -> Result<&mut Cursor<Vec<u8>>, Box<dyn std::error::Error>>;
     fn internal_error(self, b: &mut Cursor<Vec<u8>>, error: Box<dyn std::error::Error>);
 }
 
@@ -14,12 +17,15 @@ pub trait Decode {
 
 #[derive(Clone)]
 pub struct TextContext {
-    pub data: u32
+    pub data: String,
 }
 
 impl Encode for TextContext {
-    fn encode(self, b: &mut Cursor<Vec<u8>>) -> Result<&mut Cursor<Vec<u8>>, Box<dyn std::error::Error>> {
-        b.encode_u32(self.data)?;
+    fn encode(
+        self,
+        b: &mut Cursor<Vec<u8>>,
+    ) -> Result<&mut Cursor<Vec<u8>>, Box<dyn std::error::Error>> {
+        b.encode_string(&self.data)?;
         Ok(b)
     }
 
@@ -29,7 +35,9 @@ impl Encode for TextContext {
 }
 
 impl Decode for TextContext {
-    fn decode(b: &mut Cursor<&mut Vec<u8>>) -> Result<Option<TextContext>, Box<dyn std::error::Error>> {
+    fn decode(
+        b: &mut Cursor<&mut Vec<u8>>,
+    ) -> Result<Option<TextContext>, Box<dyn std::error::Error>> {
         if b.decode_none() {
             return Ok(None);
         }
@@ -39,7 +47,7 @@ impl Decode for TextContext {
         }
 
         Ok(Some(TextContext {
-            data: b.decode_u32()?,
+            data: b.decode_string()?,
         }))
     }
 }

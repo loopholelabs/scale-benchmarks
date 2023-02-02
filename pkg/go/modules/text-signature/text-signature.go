@@ -7,7 +7,7 @@ import (
 )
 
 func Scale(ctx *signature.Context) (*signature.Context, error) {
-	ctx.Data = 30
+	ctx.Data = "Hello from Go!"
 
 	return ctx, nil
 }

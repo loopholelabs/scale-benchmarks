@@ -11,7 +11,7 @@ var (
 )
 
 type TextContext struct {
-	Data uint32
+	Data string
 }
 
 func NewTextContext() *TextContext {
@@ -26,7 +26,7 @@ func (x *TextContext) internalEncode(b *polyglot.Buffer) {
 	if x == nil {
 		polyglot.Encoder(b).Nil()
 	} else {
-		polyglot.Encoder(b).Uint32(x.Data)
+		polyglot.Encoder(b).String(x.Data)
 	}
 }
 
@@ -48,7 +48,7 @@ func (x *TextContext) decode(d *polyglot.Decoder) error {
 	if err != nil {
 		return err
 	}
-	x.Data, err = d.Uint32()
+	x.Data, err = d.String()
 	if err != nil {
 		return err
 	}

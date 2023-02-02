@@ -6,6 +6,6 @@ pub type Context = TextContext;
 
 pub fn new() -> Context {
     Context {
-        data: 0,
+        data: "".to_string(),
     }
 }
