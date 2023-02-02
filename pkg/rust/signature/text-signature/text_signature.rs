@@ -13,11 +13,11 @@ pub trait Decode {
 }
 
 #[derive(Clone)]
-pub struct BadContext {
+pub struct TextContext {
     pub data: u32
 }
 
-impl Encode for BadContext {
+impl Encode for TextContext {
     fn encode(self, b: &mut Cursor<Vec<u8>>) -> Result<&mut Cursor<Vec<u8>>, Box<dyn std::error::Error>> {
         b.encode_u32(self.data)?;
         Ok(b)
@@ -28,8 +28,8 @@ impl Encode for BadContext {
     }
 }
 
-impl Decode for BadContext {
-    fn decode(b: &mut Cursor<&mut Vec<u8>>) -> Result<Option<BadContext>, Box<dyn std::error::Error>> {
+impl Decode for TextContext {
+    fn decode(b: &mut Cursor<&mut Vec<u8>>) -> Result<Option<TextContext>, Box<dyn std::error::Error>> {
         if b.decode_none() {
             return Ok(None);
         }
@@ -38,7 +38,7 @@ impl Decode for BadContext {
             return Err(error);
         }
 
-        Ok(Some(BadContext {
+        Ok(Some(TextContext {
             data: b.decode_u32()?,
         }))
     }

@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/loopholelabs/scale-benchmarks/pkg/go/signature/bad-signature"
+	"github.com/loopholelabs/scale-benchmarks/pkg/go/signature/text-signature"
 	runtime "github.com/loopholelabs/scale/go"
 	"github.com/loopholelabs/scale/go/tests/harness"
 	"github.com/loopholelabs/scalefile"
@@ -16,9 +16,9 @@ import (
 func Test_main(t *testing.T) {
 	{
 		moduleConfig := &harness.Module{
-			Name:      "bad-signature",
-			Path:      "pkg/go/modules/bad-signature/bad-signature.go",
-			Signature: "github.com/loopholelabs/scale-benchmarks/pkg/go/signature/bad-signature",
+			Name:      "text-signature",
+			Path:      "pkg/go/modules/text-signature/text-signature.go",
+			Signature: "github.com/loopholelabs/scale-benchmarks/pkg/go/signature/text-signature",
 		}
 
 		generatedModules := harness.GoSetup(
@@ -41,7 +41,7 @@ func Test_main(t *testing.T) {
 			Function:  module,
 		}
 
-		r, err := runtime.NewWithSignature(context.Background(), bad.New, []*scalefunc.ScaleFunc{scaleFunc})
+		r, err := runtime.NewWithSignature(context.Background(), text.New, []*scalefunc.ScaleFunc{scaleFunc})
 		if err != nil {
 			panic(err)
 		}
@@ -60,10 +60,10 @@ func Test_main(t *testing.T) {
 
 	{
 		moduleConfig := &harness.Module{
-			Name:          "bad_signature",
-			Path:          "./pkg/rust/modules/bad_signature/bad_signature.rs",
-			Signature:     "bad_signature",
-			SignaturePath: "../../../signature/bad-signature",
+			Name:          "text_signature",
+			Path:          "./pkg/rust/modules/text_signature/text_signature.rs",
+			Signature:     "text_signature",
+			SignaturePath: "../../../signature/text-signature",
 		}
 
 		generatedModules := harness.RustSetup(
@@ -95,7 +95,7 @@ func Test_main(t *testing.T) {
 			Function:  module,
 		}
 
-		r, err := runtime.NewWithSignature(context.Background(), bad.New, []*scalefunc.ScaleFunc{scaleFunc})
+		r, err := runtime.NewWithSignature(context.Background(), text.New, []*scalefunc.ScaleFunc{scaleFunc})
 		if err != nil {
 			panic(err)
 		}

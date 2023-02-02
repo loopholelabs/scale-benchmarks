@@ -1,8 +1,8 @@
 [package]
-name = "bad_signature"
+name = "text_signature"
 version = "0.1.0"
 edition = "2021"
-description = "bad signature"
+description = "text signature"
 
 [lib]
 path = "lib.rs"

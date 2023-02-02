@@ -1,7 +1,7 @@
 #![cfg(target_arch = "wasm32")]
 
 use crate::context::Context;
-use crate::bad_signature::{Decode, Encode, BadContext};
+use crate::text_signature::{Decode, Encode, TextContext};
 use scale_signature::{Context as ContextTrait, GuestContext as GuestContextTrait};
 use std::io::Cursor;
 
@@ -19,7 +19,7 @@ impl ContextTrait for Context {
 impl GuestContextTrait for GuestContext {
     unsafe fn to_write_buffer(&mut self) -> (u32, u32) {
         let mut cursor = Cursor::new(Vec::new());
-        cursor = match BadContext::encode(self.clone(), &mut cursor) {
+        cursor = match TextContext::encode(self.clone(), &mut cursor) {
             Ok(_) => cursor,
             Err(err) => return self.error_write_buffer(err),
         };
@@ -46,7 +46,7 @@ impl GuestContextTrait for GuestContext {
 
     unsafe fn from_read_buffer(&mut self) -> Option<Box<dyn std::error::Error>> {
         let mut cursor = Cursor::new(&mut READ_BUFFER);
-        let result = BadContext::decode(&mut cursor);
+        let result = TextContext::decode(&mut cursor);
         return match result {
             Ok(context) => {
                 *self = context.unwrap();

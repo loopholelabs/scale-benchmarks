@@ -1,6 +1,6 @@
 //go:build tinygo || js || wasm
 
-package bad
+package text
 
 import (
 	"github.com/loopholelabs/polyglot-go"
@@ -21,13 +21,13 @@ type GuestContext Context
 // Context is a context object for an incoming request. It is meant to be used
 // inside the Scale function.
 type Context struct {
-	*BadContext
+	*TextContext
 }
 
 // New creates a new empty Context
 func New() *Context {
 	return &Context{
-		BadContext: NewBadContext(),
+		TextContext: NewTextContext(),
 	}
 }
 

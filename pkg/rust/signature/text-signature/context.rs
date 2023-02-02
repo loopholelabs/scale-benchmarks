@@ -1,8 +1,8 @@
 #![cfg(target_arch = "wasm32")]
 
-use crate::bad_signature::BadContext;
+use crate::text_signature::TextContext;
 
-pub type Context = BadContext;
+pub type Context = TextContext;
 
 pub fn new() -> Context {
     Context {

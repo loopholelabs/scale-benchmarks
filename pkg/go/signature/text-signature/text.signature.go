@@ -1,4 +1,4 @@
-package bad
+package text
 
 import (
 	"errors"
@@ -10,19 +10,19 @@ var (
 	NilDecode = errors.New("cannot decode into a nil root struct")
 )
 
-type BadContext struct {
+type TextContext struct {
 	Data uint32
 }
 
-func NewBadContext() *BadContext {
-	return &BadContext{}
+func NewTextContext() *TextContext {
+	return &TextContext{}
 }
 
-func (x *BadContext) error(b *polyglot.Buffer, err error) {
+func (x *TextContext) error(b *polyglot.Buffer, err error) {
 	polyglot.Encoder(b).Error(err)
 }
 
-func (x *BadContext) internalEncode(b *polyglot.Buffer) {
+func (x *TextContext) internalEncode(b *polyglot.Buffer) {
 	if x == nil {
 		polyglot.Encoder(b).Nil()
 	} else {
@@ -30,7 +30,7 @@ func (x *BadContext) internalEncode(b *polyglot.Buffer) {
 	}
 }
 
-func (x *BadContext) internalDecode(b []byte) error {
+func (x *TextContext) internalDecode(b []byte) error {
 	if x == nil {
 		return NilDecode
 	}
@@ -39,7 +39,7 @@ func (x *BadContext) internalDecode(b []byte) error {
 	return x.decode(d)
 }
 
-func (x *BadContext) decode(d *polyglot.Decoder) error {
+func (x *TextContext) decode(d *polyglot.Decoder) error {
 	if d.Nil() {
 		return nil
 	}
