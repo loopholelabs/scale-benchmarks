@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"log"
 	"os"
 	"os/exec"
 	"testing"
@@ -22,7 +20,7 @@ type existmOutput struct {
 	Matches string `json:"matches"`
 }
 
-func Test_scale_go(t *testing.T) {
+func BenchmarkScaleGo(b *testing.B) {
 	moduleConfig := &harness.Module{
 		Name:      "text-signature",
 		Path:      "pkg/scale/go/modules/text-signature/text-signature.go",
@@ -30,7 +28,7 @@ func Test_scale_go(t *testing.T) {
 	}
 
 	generatedModules := harness.GoSetup(
-		t,
+		b,
 		[]*harness.Module{moduleConfig},
 		"github.com/loopholelabs/scale-benchmarks/pkg/scale/go/modules",
 	)
@@ -59,16 +57,20 @@ func Test_scale_go(t *testing.T) {
 		panic(err)
 	}
 
-	i.Context().Data = "peach"
+	b.Run("match_regex", func(b *testing.B) {
+		i.Context().Data = "peach"
 
-	if err := i.Run(context.Background()); err != nil {
-		panic(err)
-	}
+		if err := i.Run(context.Background()); err != nil {
+			panic(err)
+		}
 
-	log.Println("Scale Go:", i.Context().Data)
+		if i.Context().Data != "peach" {
+			panic("invalid regex match")
+		}
+	})
 }
 
-func Test_scale_rust(t *testing.T) {
+func BenchmarkScaleRust(b *testing.B) {
 	moduleConfig := &harness.Module{
 		Name:          "text_signature",
 		Path:          "./pkg/scale/rust/modules/text_signature/text_signature.rs",
@@ -77,7 +79,7 @@ func Test_scale_rust(t *testing.T) {
 	}
 
 	generatedModules := harness.RustSetup(
-		t,
+		b,
 		[]*harness.Module{moduleConfig},
 		[]*scalefile.Dependency{
 			{
@@ -119,25 +121,33 @@ func Test_scale_rust(t *testing.T) {
 		panic(err)
 	}
 
-	i.Context().Data = "peach"
+	b.Run("match_regex", func(b *testing.B) {
+		i.Context().Data = "peach"
 
-	if err := i.Run(context.Background()); err != nil {
-		panic(err)
-	}
+		if err := i.Run(context.Background()); err != nil {
+			panic(err)
+		}
 
-	log.Println("Scale Rust:", i.Context().Data)
+		if i.Context().Data != "peach" {
+			panic("invalid regex match")
+		}
+	})
 }
 
-func Test_native_go(t *testing.T) {
-	matches, err := regex.FindString("peach")
-	if err != nil {
-		panic(err)
-	}
+func BenchmarkNativeGo(b *testing.B) {
+	b.Run("match_regex", func(b *testing.B) {
+		matches, err := regex.FindString("peach")
+		if err != nil {
+			panic(err)
+		}
 
-	log.Println("Native Go:", matches)
+		if matches != "peach" {
+			panic("invalid regex match")
+		}
+	})
 }
 
-func Test_exism_rust(t *testing.T) {
+func BenchmarkExtismRust(b *testing.B) {
 	cmd := exec.Command("cargo", "build", "--release", "--target", "wasm32-unknown-unknown")
 
 	cmd.Dir = "./pkg/extism/rust"
@@ -156,15 +166,19 @@ func Test_exism_rust(t *testing.T) {
 		panic(err)
 	}
 
-	out, err := plugin.Call("match_regex", []byte("peach"))
-	if err != nil {
-		panic(err)
-	}
+	b.Run("match_regex", func(b *testing.B) {
+		out, err := plugin.Call("match_regex", []byte("peach"))
+		if err != nil {
+			panic(err)
+		}
 
-	var dst existmOutput
-	if json.Unmarshal(out, &dst); err != nil {
-		panic(err)
-	}
+		var dst existmOutput
+		if json.Unmarshal(out, &dst); err != nil {
+			panic(err)
+		}
 
-	fmt.Println("Exism Rust:", dst.Matches)
+		if dst.Matches != "peach" {
+			panic("invalid regex match")
+		}
+	})
 }
