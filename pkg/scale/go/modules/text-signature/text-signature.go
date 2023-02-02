@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	r = regexp.MustCompile("p([a-z]+)ch")
+	r = regexp.MustCompile("peach")
 )
 
 func Scale(ctx *signature.Context) (*signature.Context, error) {

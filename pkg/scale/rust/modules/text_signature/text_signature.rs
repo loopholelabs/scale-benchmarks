@@ -3,7 +3,7 @@ use lazy_static::lazy_static;
 use text_signature::context::Context;
 
 lazy_static! {
-    static ref RE: Regex = Regex::new("p([a-z]+)ch").unwrap();
+    static ref RE: Regex = Regex::new("peach").unwrap();
 }
 
 pub fn scale(ctx: &mut Context) -> Result<&mut Context, Box<dyn std::error::Error>> {

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/loopholelabs/scale/go/compile"
 	"github.com/loopholelabs/scale/go/tests/harness"
 	rustCompile "github.com/loopholelabs/scale/rust/compile"
 	"github.com/loopholelabs/scalefile"
@@ -12,6 +13,79 @@ import (
 	"path"
 	"testing"
 )
+
+func GoSetup(t testing.TB, modules []*harness.Module, importPath string) map[*harness.Module]string {
+	tinygo, err := exec.LookPath("tinygo")
+	require.NoError(t, err, "tinygo not found in path")
+
+	t.Cleanup(func() {
+		for _, module := range modules {
+			moduleDir := path.Dir(module.Path)
+			err := os.RemoveAll(path.Join(moduleDir, fmt.Sprintf("%s-%s-build", module.Name, t.Name())))
+			if !os.IsNotExist(err) {
+				require.NoError(t, err, fmt.Sprintf("failed to remove module %s", module.Name))
+			}
+		}
+	})
+
+	g := compile.NewGenerator()
+
+	generated := make(map[*harness.Module]string)
+
+	for _, module := range modules {
+		_, err = os.Stat(module.Path)
+		require.NoError(t, err, fmt.Sprintf("module %s not found", module.Name))
+
+		moduleDir := path.Dir(module.Path)
+
+		err = os.Mkdir(path.Join(moduleDir, fmt.Sprintf("%s-%s-build", module.Name, t.Name())), 0755)
+		if !os.IsExist(err) {
+			require.NoError(t, err, fmt.Sprintf("failed to create build directory for scale function %s", module.Name))
+		}
+
+		file, err := os.OpenFile(path.Join(moduleDir, fmt.Sprintf("%s-%s-build", module.Name, t.Name()), "main.go"), os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+		require.NoError(t, err, fmt.Sprintf("failed to create main.go for scale function %s", module.Name))
+
+		err = g.GenerateGoMain(file, fmt.Sprintf("%s/%s/%s-%s-build/scale", importPath, module.Name, module.Name, t.Name()), module.Signature)
+		require.NoError(t, err, fmt.Sprintf("failed to generate main.go for scale function %s", module.Name))
+
+		err = file.Close()
+		require.NoError(t, err, fmt.Sprintf("failed to close main.go for scale function %s", module.Name))
+
+		err = os.Mkdir(path.Join(moduleDir, fmt.Sprintf("%s-%s-build", module.Name, t.Name()), "scale"), 0755)
+		if !os.IsExist(err) {
+			require.NoError(t, err, fmt.Sprintf("failed to create scale directory for scale function %s", module.Name))
+		}
+
+		scale, err := os.OpenFile(path.Join(moduleDir, fmt.Sprintf("%s-%s-build", module.Name, t.Name()), "scale", "scale.go"), os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+		require.NoError(t, err, fmt.Sprintf("failed to create scale.go for scale function %s", module.Name))
+
+		file, err = os.Open(module.Path)
+		require.NoError(t, err, fmt.Sprintf("failed to open scale function %s", module.Name))
+
+		_, err = io.Copy(scale, file)
+		require.NoError(t, err, fmt.Sprintf("failed to copy scale function %s", module.Name))
+
+		err = scale.Close()
+		require.NoError(t, err, fmt.Sprintf("failed to close scale.go for scale function %s", module.Name))
+
+		err = file.Close()
+		require.NoError(t, err, fmt.Sprintf("failed to close scale function %s", module.Name))
+
+		wd, err := os.Getwd()
+		require.NoError(t, err, fmt.Sprintf("failed to get working directory for scale function %s", module.Name))
+
+		cmd := exec.Command(tinygo, "build", "-o", fmt.Sprintf("%s-%s.wasm", module.Name, t.Name()), "-scheduler=none", "-target=wasi", "--no-debug", "-opt=2", "main.go")
+		cmd.Dir = path.Join(wd, moduleDir, fmt.Sprintf("%s-%s-build", module.Name, t.Name()))
+
+		err = cmd.Run()
+		require.NoError(t, err, fmt.Sprintf("failed to build module %s", module.Name))
+
+		generated[module] = path.Join(cmd.Dir, fmt.Sprintf("%s-%s.wasm", module.Name, t.Name()))
+	}
+
+	return generated
+}
 
 func RustSetup(t testing.TB, modules []*harness.Module, dependencies []*scalefile.Dependency) map[*harness.Module]string {
 	cargo, err := exec.LookPath("cargo")

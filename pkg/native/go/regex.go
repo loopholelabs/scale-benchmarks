@@ -3,7 +3,7 @@ package regex
 import "regexp"
 
 var (
-	r = regexp.MustCompile("p([a-z]+)ch")
+	r = regexp.MustCompile("peach")
 )
 
 func FindString(input string) (string, error) {
