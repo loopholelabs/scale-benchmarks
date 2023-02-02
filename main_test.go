@@ -2,17 +2,25 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"testing"
 
+	"github.com/extism/extism"
+	regex "github.com/loopholelabs/scale-benchmarks/pkg/native/go"
 	"github.com/loopholelabs/scale-benchmarks/pkg/scale/go/signature/text-signature"
-	regex "github.com/loopholelabs/scale-benchmarks/pkg/scale/native/go"
 	runtime "github.com/loopholelabs/scale/go"
 	"github.com/loopholelabs/scale/go/tests/harness"
 	"github.com/loopholelabs/scalefile"
 	"github.com/loopholelabs/scalefile/scalefunc"
 )
+
+type existmOutput struct {
+	Matches string `json:"matches"`
+}
 
 func Test_scale_go(t *testing.T) {
 	moduleConfig := &harness.Module{
@@ -127,4 +135,36 @@ func Test_native_go(t *testing.T) {
 	}
 
 	log.Println("Native Go:", matches)
+}
+
+func Test_exism_rust(t *testing.T) {
+	cmd := exec.Command("cargo", "build", "--release", "--target", "wasm32-unknown-unknown")
+
+	cmd.Dir = "./pkg/extism/rust"
+
+	if err := cmd.Run(); err != nil {
+		panic(err)
+	}
+
+	ctx := extism.NewContext()
+	defer ctx.Free()
+
+	manifest := extism.Manifest{Wasm: []extism.Wasm{extism.WasmFile{Path: "./pkg/extism/rust/target/wasm32-unknown-unknown/release/rust.wasm"}}}
+
+	plugin, err := ctx.PluginFromManifest(manifest, []extism.Function{}, true)
+	if err != nil {
+		panic(err)
+	}
+
+	out, err := plugin.Call("match_regex", []byte("peach"))
+	if err != nil {
+		panic(err)
+	}
+
+	var dst existmOutput
+	if json.Unmarshal(out, &dst); err != nil {
+		panic(err)
+	}
+
+	fmt.Println("Exism Rust:", dst.Matches)
 }
