@@ -2,11 +2,10 @@ package regex
 
 import "regexp"
 
-func FindString(input string) (string, error) {
-	r, err := regexp.Compile("p([a-z]+)ch")
-	if err != nil {
-		return "", err
-	}
+var (
+	r = regexp.MustCompile("p([a-z]+)ch")
+)
 
+func FindString(input string) (string, error) {
 	return r.FindString(input), nil
 }

@@ -3,11 +3,11 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"github.com/extism/extism"
 	"os"
 	"os/exec"
 	"testing"
 
-	"github.com/extism/extism"
 	regex "github.com/loopholelabs/scale-benchmarks/pkg/native/go"
 	"github.com/loopholelabs/scale-benchmarks/pkg/scale/go/signature/text-signature"
 	runtime "github.com/loopholelabs/scale/go"
@@ -52,20 +52,22 @@ func BenchmarkScaleGo(b *testing.B) {
 		panic(err)
 	}
 
-	i, err := r.Instance(nil)
-	if err != nil {
-		panic(err)
-	}
-
+	b.ResetTimer()
 	b.Run("match_regex", func(b *testing.B) {
-		i.Context().Data = "peach"
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			i, err := r.Instance(nil)
+			if err != nil {
+				panic(err)
+			}
 
-		if err := i.Run(context.Background()); err != nil {
-			panic(err)
-		}
-
-		if i.Context().Data != "peach" {
-			panic("invalid regex match")
+			i.Context().Data = "peach"
+			if err := i.Run(context.Background()); err != nil {
+				panic(err)
+			}
+			if i.Context().Data != "peach" {
+				panic("invalid regex match")
+			}
 		}
 	})
 }
@@ -78,7 +80,7 @@ func BenchmarkScaleRust(b *testing.B) {
 		SignaturePath: "../../../signature/text-signature",
 	}
 
-	generatedModules := harness.RustSetup(
+	generatedModules := RustSetup(
 		b,
 		[]*harness.Module{moduleConfig},
 		[]*scalefile.Dependency{
@@ -93,6 +95,10 @@ func BenchmarkScaleRust(b *testing.B) {
 			{
 				Name:    "regex",
 				Version: "1.7.1",
+			},
+			{
+				Name:    "lazy_static",
+				Version: "1.4.0",
 			},
 		},
 	)
@@ -116,33 +122,40 @@ func BenchmarkScaleRust(b *testing.B) {
 		panic(err)
 	}
 
-	i, err := r.Instance(nil)
-	if err != nil {
-		panic(err)
-	}
-
+	b.ResetTimer()
 	b.Run("match_regex", func(b *testing.B) {
-		i.Context().Data = "peach"
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			i, err := r.Instance(nil)
+			if err != nil {
+				panic(err)
+			}
 
-		if err := i.Run(context.Background()); err != nil {
-			panic(err)
-		}
+			i.Context().Data = "peach"
 
-		if i.Context().Data != "peach" {
-			panic("invalid regex match")
+			if err := i.Run(context.Background()); err != nil {
+				panic(err)
+			}
+
+			if i.Context().Data != "peach" {
+				panic("invalid regex match")
+			}
 		}
 	})
 }
 
 func BenchmarkNativeGo(b *testing.B) {
 	b.Run("match_regex", func(b *testing.B) {
-		matches, err := regex.FindString("peach")
-		if err != nil {
-			panic(err)
-		}
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			matches, err := regex.FindString("peach")
+			if err != nil {
+				panic(err)
+			}
 
-		if matches != "peach" {
-			panic("invalid regex match")
+			if matches != "peach" {
+				panic("invalid regex match")
+			}
 		}
 	})
 }
@@ -166,19 +179,23 @@ func BenchmarkExtismRust(b *testing.B) {
 		panic(err)
 	}
 
+	b.ResetTimer()
 	b.Run("match_regex", func(b *testing.B) {
-		out, err := plugin.Call("match_regex", []byte("peach"))
-		if err != nil {
-			panic(err)
-		}
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			out, err := plugin.Call("match_regex", []byte("peach"))
+			if err != nil {
+				panic(err)
+			}
 
-		var dst existmOutput
-		if json.Unmarshal(out, &dst); err != nil {
-			panic(err)
-		}
+			var dst existmOutput
+			if err = json.Unmarshal(out, &dst); err != nil {
+				panic(err)
+			}
 
-		if dst.Matches != "peach" {
-			panic("invalid regex match")
+			if dst.Matches != "peach" {
+				panic("invalid regex match")
+			}
 		}
 	})
 }
