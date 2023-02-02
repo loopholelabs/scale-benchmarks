@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	r = regexp.MustCompile("peach")
+	r = regexp.MustCompile(`\b\w{4}\b`)
 )
 
 func Scale(ctx *signature.Context) (*signature.Context, error) {
-	ctx.Data = r.FindString(ctx.Data)
+	ctx.Data = r.ReplaceAllString(ctx.Data, "wasm")
 	return ctx, nil
 }

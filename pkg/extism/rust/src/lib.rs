@@ -9,13 +9,13 @@ struct Output {
 }
 
 lazy_static! {
-    static ref RE: Regex = Regex::new("p([a-z]+)ch").unwrap();
+    static ref RE: Regex = Regex::new(r"\b\w{4}\b").unwrap();
 }
 
 #[plugin_fn]
 pub unsafe fn match_regex(input: String) -> FnResult<Json<Output>> {
     let output = Output {
-        matches: RE.find(input.as_str()).unwrap().as_str().to_string(),
+        matches: RE.replace_all(input.as_str(), "wasm").to_string(),
     };
 
     Ok(Json(output))
