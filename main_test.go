@@ -6,7 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/loopholelabs/scale-benchmarks/pkg/go/signature/text-signature"
+	"github.com/loopholelabs/scale-benchmarks/pkg/scale/go/signature/text-signature"
+	regex "github.com/loopholelabs/scale-benchmarks/pkg/scale/native/go"
 	runtime "github.com/loopholelabs/scale/go"
 	"github.com/loopholelabs/scale/go/tests/harness"
 	"github.com/loopholelabs/scalefile"
@@ -16,14 +17,14 @@ import (
 func Test_scale_go(t *testing.T) {
 	moduleConfig := &harness.Module{
 		Name:      "text-signature",
-		Path:      "pkg/go/modules/text-signature/text-signature.go",
-		Signature: "github.com/loopholelabs/scale-benchmarks/pkg/go/signature/text-signature",
+		Path:      "pkg/scale/go/modules/text-signature/text-signature.go",
+		Signature: "github.com/loopholelabs/scale-benchmarks/pkg/scale/go/signature/text-signature",
 	}
 
 	generatedModules := harness.GoSetup(
 		t,
 		[]*harness.Module{moduleConfig},
-		"github.com/loopholelabs/scale-benchmarks/pkg/go/modules",
+		"github.com/loopholelabs/scale-benchmarks/pkg/scale/go/modules",
 	)
 
 	module, err := os.ReadFile(generatedModules[moduleConfig])
@@ -56,13 +57,13 @@ func Test_scale_go(t *testing.T) {
 		panic(err)
 	}
 
-	log.Println("Go:", i.Context().Data)
+	log.Println("Scale Go:", i.Context().Data)
 }
 
 func Test_scale_rust(t *testing.T) {
 	moduleConfig := &harness.Module{
 		Name:          "text_signature",
-		Path:          "./pkg/rust/modules/text_signature/text_signature.rs",
+		Path:          "./pkg/scale/rust/modules/text_signature/text_signature.rs",
 		Signature:     "text_signature",
 		SignaturePath: "../../../signature/text-signature",
 	}
@@ -80,7 +81,7 @@ func Test_scale_rust(t *testing.T) {
 				Version: "0.4.5",
 			},
 			{
-				Name:    "regex ",
+				Name:    "regex",
 				Version: "1.7.1",
 			},
 		},
@@ -110,9 +111,20 @@ func Test_scale_rust(t *testing.T) {
 		panic(err)
 	}
 
+	i.Context().Data = "peach"
+
 	if err := i.Run(context.Background()); err != nil {
 		panic(err)
 	}
 
-	log.Println("Rust:", i.Context().Data)
+	log.Println("Scale Rust:", i.Context().Data)
+}
+
+func Test_native_go(t *testing.T) {
+	matches, err := regex.FindString("peach")
+	if err != nil {
+		panic(err)
+	}
+
+	log.Println("Native Go:", matches)
 }

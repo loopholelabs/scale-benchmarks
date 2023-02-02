@@ -5,7 +5,7 @@ package scale
 import (
 	"regexp"
 
-	signature "github.com/loopholelabs/scale-benchmarks/pkg/go/signature/text-signature"
+	signature "github.com/loopholelabs/scale-benchmarks/pkg/scale/go/signature/text-signature"
 )
 
 func Scale(ctx *signature.Context) (*signature.Context, error) {
