@@ -7,9 +7,13 @@ edition = "2021"
 
 [dependencies]
 extism-pdk = "0.2.0"
-serde = { version = "1.0.152", features = ["derive"] }
-serde_json = { version = "1.0.91" }
 regex = "1.7.1"
+lazy_static = "1.4.0"
+polyglot_rs = "0.6.0"
+wee_alloc = "0.4.5"
+
+[dependencies.text_signature]
+path = "../../scale/rust/signature/text-signature"
 
 [lib]
 crate_type = ["cdylib"]
