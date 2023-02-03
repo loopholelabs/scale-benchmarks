@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"github.com/extism/extism"
-	regex "github.com/loopholelabs/scale-benchmarks/pkg/native/go"
 	"os"
 	"os/exec"
 	"testing"
 
+	"github.com/extism/extism"
+	"github.com/loopholelabs/polyglot-go"
+	regex "github.com/loopholelabs/scale-benchmarks/pkg/native/go"
 	"github.com/loopholelabs/scale-benchmarks/pkg/scale/go/signature/text-signature"
 	runtime "github.com/loopholelabs/scale/go"
 	"github.com/loopholelabs/scale/go/tests/harness"
@@ -171,23 +171,25 @@ func BenchmarkExtismRust(b *testing.B) {
 		panic(err)
 	}
 
-	var r = []byte(Regex)
-
 	b.ResetTimer()
 	b.Run("match_regex", func(b *testing.B) {
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			out, err := plugin.Call("match_regex", r)
+			buf := polyglot.NewBuffer()
+
+			polyglot.Encoder(buf).String(Regex)
+
+			out, err := plugin.Call("match_regex", buf.Bytes())
 			if err != nil {
 				panic(err)
 			}
 
-			var dst existmOutput
-			if err = json.Unmarshal(out, &dst); err != nil {
+			matches, err := polyglot.GetDecoder(out).String()
+			if err != nil {
 				panic(err)
 			}
 
-			if dst.Matches != Match {
+			if matches != Match {
 				panic("invalid regex match")
 			}
 		}
