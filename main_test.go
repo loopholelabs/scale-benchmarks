@@ -21,64 +21,6 @@ const (
 	Match = "BYwnOjWhprPmDncp8qpQ5CY4r1RGZuqKLBowmtMCd wasm ETjLOG685YC4RIjXB0HadNpqYS4M7GPGUVAKRZRC1ibqQqGnuzqX2Hjosm6MKNCp5QifX7Up2phqkFqkjpSu3k59oi6M5YbTMiy4JukVFx2402IlrHU1McK7US0skB1cF0W2ZDpsypNmGJRXRMY0pPsYbw7G2a0xJnhTITXcuF5xJWR1rz5zdGZQbbjZoHZcEnveDFq5kOmCVc wasm DsJVHTsAlypLI9sVtbTLwmE1DG2C6AgUo3GO1DpCx3jV43oXUxaTVJqZO13AYqvNPbxizYZ5BckZFBbJybY3Vnm20Sm7nXbwZs5N2ugz3EpUQvXwqHdHWzc1T8uKPD5LTDM8UBpVoF wasm 9G3mWarrp43SvoidITriFhzHmyVWNd6n2LIVocr3pOai4DOlkAn7QDup6z6spMAf8UcI4wbfoSzG0k5Qy1rGBhPaJKJRW2 MC9ma3U3rnjAOBtEUHZ2qfOUpfMNgPlGpvzr4IGNNFf9RFlF7yRUBvRnYxyonIWPPiR1x1wWgxc20o5cW4GU7kytAOuGlpzpykcAxCJLLP6wJegaMhAeb8xBLpuBetNEbfcyyOcJBun5BhmFOmv8 wasm IvICWx2wlYZ61YDBpPcIpqnMb9MHwT8GroC1YITZBlNGBHMpAe4d2sNZe9d0Wvfbv5mMo30Bm1Pa5S3x38jgu6y0BaqZl9GhlukE9CqPJGUsJZ5suDH19WiOrvz7mXwXhi4lWm1YdwNi0xhVnXITtmKq5rikIS6dul1USgDf3TwyLYpyCG46Xj92PssJmnhPdH1WAnvXY sbs8RaemyqmPggtGNwU2JjuPjdmQRakIusv2WimN7zG8R8Pf1225IAJ2j8aiZBrxnjmrucaYOQCrLm7e2Q5q8 wasm HOkCEJJGHVLYJtGgHKa1PRQ5qCcsIAUdkW3yRfdulutteLe3We9z9XQvWuTYMLDPpOJqMzDNTGpTYts7AL8pFog1k82XVuMZ6ItccxOBpuzDcahH4wDqCGjak8qPVxmnrGmSsrdUHVz6SrScElMo0nOF8RIpYAVdJr5NxWIK1uzc1iIiZnbUD6uDNmBkmfec6IgK6aqnEZaGLDJXDHSYfzWUOi7y3KNPl0CghL9BId8v4040mCKMfmdthWWLJ2tpWIo1482ghiU5 2qtrzgFgYKfyfr4X6FXzN3hM3bLnuwItQrTCEp3BYz79bCAaQGhicZzqE83Mh2 wasm IIVID622qlEyVEGuEmNJ5JteEzbpklhTKnVMflzzWyWbZe6kIgeUr9mxWjkJGisvRbZKwfnojeC82M1nHgUa4k46x7Dw7mL3rChORjBxBMYjFeOvCsT6kEo3vPeachLUKdkExJbr9Yei0fKyOFSDlxpFhlRKuwGxXu4jGo4CzKDsVsahqzC9iGw53bHiw0V4Pwmdhzv482s3zU9XLTgQr6GuL1I0kSfh9BkVoK5fFvg1hm7ECrt6p8q3kLVjxte EK9W9q2q9etMaPLymcCRZ0XauMDzJY08JeVvovnT2g5hxE7UGW1 wasm YRotQUivrrXQnhEw55faznZZBU1ULVs4BfYkIkEfS91NetBhona6zrzDwMsXi0FJjdaiJ25lvetPDaMzUs0l6nfkGkVyU376mFPfPkpBKZR2z2Xwzxndi0SkUnqm8jCa7iq2oSJstTdUXtCK2xTXMIh7tiuPVftit GFYQXXI3vY QFe1xShWJgFAqYguQ8gcxMPSzMlyDaPmMuTPgFZDM0cd wasm NS3fTggxBa4p5jgS4S0nhae05RkYkXGzuNMXeu6IoR9PFqVFnXcBYD0Ld9otrAiqUuIGYGmAjm3WxpZjXfbF2HhWcx86BaSPTut4OwkspEdRCEm1iAzEGJyEOFi93u9eTGpqrKvU09ZcNtO9138cnva2UtIFaRhL02ckRfycz3BGfwqYl3TGtjWdKjmxn1WreRIIq5gkbWJws5VQsov0V2U8pGedj N2RDqWgh2tFiJA9fmytgRgqSnqxIwyBMgY5RnE6CZ0 wasm Iv4QPiWMu0oG7r0e4nSNtG13O wasm"
 )
 
-type existmOutput struct {
-	Matches string `json:"matches"`
-}
-
-//func BenchmarkScaleGo(b *testing.B) {
-//	moduleConfig := &harness.Module{
-//		Name:      "text-signature",
-//		Path:      "pkg/scale/go/modules/text-signature/text-signature.go",
-//		Signature: "github.com/loopholelabs/scale-benchmarks/pkg/scale/go/signature/text-signature",
-//	}
-//
-//	generatedModules := GoSetup(
-//		b,
-//		[]*harness.Module{moduleConfig},
-//		"github.com/loopholelabs/scale-benchmarks/pkg/scale/go/modules",
-//	)
-//
-//	module, err := os.ReadFile(generatedModules[moduleConfig])
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	scaleFunc := &scalefunc.ScaleFunc{
-//		Version:   scalefunc.V1Alpha,
-//		Name:      "TestName",
-//		Tag:       "TestTag",
-//		Signature: "ExampleName@ExampleVersion",
-//		Language:  scalefunc.Go,
-//		Function:  module,
-//	}
-//
-//	r, err := runtime.NewWithSignature(context.Background(), text.New, []*scalefunc.ScaleFunc{scaleFunc})
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	ctx := context.Background()
-//
-//	b.ResetTimer()
-//	b.Run("match_regex", func(b *testing.B) {
-//		b.ReportAllocs()
-//		for i := 0; i < b.N; i++ {
-//			i, err := r.Instance(nil)
-//			if err != nil {
-//				panic(err)
-//			}
-//
-//			i.Context().Data = Regex
-//			if err := i.Run(ctx); err != nil {
-//				panic(err)
-//			}
-//			if i.Context().Data != Match {
-//				panic("invalid regex match")
-//			}
-//		}
-//	})
-//}
-
 func BenchmarkScaleRust(b *testing.B) {
 	moduleConfig := &harness.Module{
 		Name:          "text_signature",
@@ -132,6 +74,7 @@ func BenchmarkScaleRust(b *testing.B) {
 	ctx := context.Background()
 	b.ResetTimer()
 	b.Run("match_regex", func(b *testing.B) {
+		b.SetBytes(int64(len(Regex)))
 		b.ReportAllocs()
 		for j := 0; j < b.N; j++ {
 			i, err := r.Instance(nil)
@@ -176,6 +119,7 @@ func BenchmarkExtismRust(b *testing.B) {
 
 	b.ResetTimer()
 	b.Run("match_regex", func(b *testing.B) {
+		b.SetBytes(int64(len(Regex)))
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
 			out, err := plugin.Call("match_regex", buf.Bytes())
@@ -199,6 +143,7 @@ func BenchmarkExtismRust(b *testing.B) {
 
 func BenchmarkNativeGo(b *testing.B) {
 	b.Run("match_regex", func(b *testing.B) {
+		b.SetBytes(int64(len(Regex)))
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
 			matches, err := regex.FindString(Regex)
