@@ -18,15 +18,11 @@ use std::io::Cursor;
 use extism_pdk::*;
 use lazy_static::lazy_static;
 use regex::Regex;
-use wee_alloc;
 use text_signature::text_signature::{Decode, Encode, TextContext};
 
 lazy_static! {
     static ref RE: Regex = Regex::new(r"\b\w{4}\b").unwrap();
 }
-
-#[global_allocator]
-pub static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
 
 #[plugin_fn]
 pub unsafe fn match_regex(input: Vec<u8>) -> FnResult<Vec<u8>> {

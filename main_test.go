@@ -24,9 +24,9 @@ import (
 
 	"github.com/extism/extism"
 	"github.com/loopholelabs/polyglot-go"
-	regex "github.com/loopholelabs/scale-benchmarks/pkg/native/go"
+	native "github.com/loopholelabs/scale-benchmarks/pkg/native/go"
 	"github.com/loopholelabs/scale-benchmarks/pkg/scale/go/signature/text-signature"
-	runtime "github.com/loopholelabs/scale/go"
+	scale "github.com/loopholelabs/scale/go"
 	"github.com/loopholelabs/scale/go/tests/harness"
 	"github.com/loopholelabs/scalefile"
 	"github.com/loopholelabs/scalefile/scalefunc"
@@ -51,11 +51,7 @@ func BenchmarkScaleRust(b *testing.B) {
 		[]*scalefile.Dependency{
 			{
 				Name:    "scale_signature",
-				Version: "0.2.0",
-			},
-			{
-				Name:    "wee_alloc",
-				Version: "0.4.5",
+				Version: "0.2.1",
 			},
 			{
 				Name:    "regex",
@@ -82,7 +78,7 @@ func BenchmarkScaleRust(b *testing.B) {
 		Function:  module,
 	}
 
-	r, err := runtime.NewWithSignature(context.Background(), text.New, []*scalefunc.ScaleFunc{scaleFunc})
+	r, err := scale.NewWithSignature(context.Background(), text.New, []*scalefunc.ScaleFunc{scaleFunc})
 	if err != nil {
 		panic(err)
 	}
@@ -162,7 +158,7 @@ func BenchmarkNativeGo(b *testing.B) {
 		b.SetBytes(int64(len(Regex)))
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			matches, err := regex.ReplaceAll(Regex)
+			matches, err := native.ReplaceAll(Regex)
 			if err != nil {
 				panic(err)
 			}
