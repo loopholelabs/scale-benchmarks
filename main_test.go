@@ -133,7 +133,7 @@ func BenchmarkScaleRust(b *testing.B) {
 	b.ResetTimer()
 	b.Run("match_regex", func(b *testing.B) {
 		b.ReportAllocs()
-		for i := 0; i < b.N; i++ {
+		for j := 0; j < b.N; j++ {
 			i, err := r.Instance(nil)
 			if err != nil {
 				panic(err)
@@ -171,23 +171,24 @@ func BenchmarkExtismRust(b *testing.B) {
 		panic(err)
 	}
 
+	buf := polyglot.NewBuffer()
+	polyglot.Encoder(buf).String(Regex)
+
 	b.ResetTimer()
 	b.Run("match_regex", func(b *testing.B) {
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			buf := polyglot.NewBuffer()
-
-			polyglot.Encoder(buf).String(Regex)
-
 			out, err := plugin.Call("match_regex", buf.Bytes())
 			if err != nil {
 				panic(err)
 			}
 
-			matches, err := polyglot.GetDecoder(out).String()
+			dec := polyglot.GetDecoder(out)
+			matches, err := dec.String()
 			if err != nil {
 				panic(err)
 			}
+			dec.Return()
 
 			if matches != Match {
 				panic("invalid regex match")
