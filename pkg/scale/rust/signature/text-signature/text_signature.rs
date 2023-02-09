@@ -18,11 +18,11 @@ use polyglot_rs::{Decoder, Encoder};
 use std::io::Cursor;
 
 pub trait Encode {
-    fn encode(
-        self,
-        b: &mut Cursor<Vec<u8>>,
+    fn encode<'a>(
+        &'a self,
+        b: &'a mut Cursor<Vec<u8>>,
     ) -> Result<&mut Cursor<Vec<u8>>, Box<dyn std::error::Error>>;
-    fn internal_error(self, b: &mut Cursor<Vec<u8>>, error: Box<dyn std::error::Error>);
+    fn internal_error<'a>(&'a self, b: &'a mut Cursor<Vec<u8>>, error: Box<dyn std::error::Error>);
 }
 
 pub trait Decode {
@@ -37,15 +37,15 @@ pub struct TextContext {
 }
 
 impl Encode for TextContext {
-    fn encode(
-        self,
-        b: &mut Cursor<Vec<u8>>,
+    fn encode<'a>(
+        &'a self,
+        b: &'a mut Cursor<Vec<u8>>,
     ) -> Result<&mut Cursor<Vec<u8>>, Box<dyn std::error::Error>> {
         b.encode_string(&self.data)?;
         Ok(b)
     }
 
-    fn internal_error(self, b: &mut Cursor<Vec<u8>>, error: Box<dyn std::error::Error>) {
+    fn internal_error<'a>(&'a self, b: &'a mut Cursor<Vec<u8>>, error: Box<dyn std::error::Error>) {
         b.encode_error(error).unwrap();
     }
 }

@@ -35,7 +35,7 @@ impl ContextTrait for Context {
 impl GuestContextTrait for GuestContext {
     unsafe fn to_write_buffer(&mut self) -> (u32, u32) {
         let mut cursor = Cursor::new(Vec::new());
-        cursor = match TextContext::encode(self.clone(), &mut cursor) {
+        cursor = match TextContext::encode(&self, &mut cursor) {
             Ok(_) => cursor,
             Err(err) => return self.error_write_buffer(err),
         };
@@ -50,7 +50,7 @@ impl GuestContextTrait for GuestContext {
 
     unsafe fn error_write_buffer(&mut self, error: Box<dyn std::error::Error>) -> (u32, u32) {
         let mut cursor = Cursor::new(Vec::new());
-        Encode::internal_error(self.clone(), &mut cursor, error);
+        Encode::internal_error(self, &mut cursor, error);
 
         let vec = cursor.into_inner();
 
@@ -68,9 +68,7 @@ impl GuestContextTrait for GuestContext {
                 *self = context.unwrap();
                 None
             }
-            Err(e) => {
-                Some(e)
-            },
+            Err(e) => Some(e),
         };
     }
 }

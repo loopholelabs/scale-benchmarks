@@ -35,7 +35,7 @@ pub unsafe fn match_regex(input: Vec<u8>) -> FnResult<Vec<u8>> {
             s.data = RE.replace_all(s.data.as_str(), "wasm").to_string();
 
             let mut cursor = Cursor::new(Vec::new());
-            cursor = match TextContext::encode(s.clone(), &mut cursor) {
+            cursor = match TextContext::encode(&s, &mut cursor) {
                 Ok(_) => cursor,
                 Err(err) => {
                     panic!("Error: {}", err);

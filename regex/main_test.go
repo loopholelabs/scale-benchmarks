@@ -246,15 +246,14 @@ func BenchmarkExtismRust(b *testing.B) {
 		panic(err)
 	}
 
+	buf := polyglot.NewBuffer()
 	b.ResetTimer()
 	b.Run("match regex 2048", func(b *testing.B) {
+		polyglot.Encoder(buf).String(Regex2048)
 		b.SetBytes(int64(len(Regex2048)))
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			buf := polyglot.GetBuffer()
-			polyglot.Encoder(buf).String(Regex2048)
 			out, err := plugin.Call("match_regex", buf.Bytes())
-			polyglot.PutBuffer(buf)
 			if err != nil {
 				panic(err)
 			}
@@ -270,103 +269,104 @@ func BenchmarkExtismRust(b *testing.B) {
 				panic("invalid regex match")
 			}
 		}
+		buf.Reset()
 	})
 
-	//b.Run("match regex 4096", func(b *testing.B) {
-	//	polyglot.Encoder(buf).String(Regex4096)
-	//	b.SetBytes(int64(len(Regex4096)))
-	//	b.ReportAllocs()
-	//	for i := 0; i < b.N; i++ {
-	//		out, err := plugin.Call("match_regex", buf.Bytes())
-	//		if err != nil {
-	//			panic(err)
-	//		}
-	//
-	//		dec := polyglot.GetDecoder(out)
-	//		matches, err := dec.String()
-	//		if err != nil {
-	//			panic(err)
-	//		}
-	//		dec.Return()
-	//
-	//		if matches != Match4096 {
-	//			panic("invalid regex match")
-	//		}
-	//	}
-	//	buf.Reset()
-	//})
-	//
-	//b.Run("match regex 8192", func(b *testing.B) {
-	//	polyglot.Encoder(buf).String(Regex8192)
-	//	b.SetBytes(int64(len(Regex8192)))
-	//	b.ReportAllocs()
-	//	for i := 0; i < b.N; i++ {
-	//		out, err := plugin.Call("match_regex", buf.Bytes())
-	//		if err != nil {
-	//			panic(err)
-	//		}
-	//
-	//		dec := polyglot.GetDecoder(out)
-	//		matches, err := dec.String()
-	//		if err != nil {
-	//			panic(err)
-	//		}
-	//		dec.Return()
-	//
-	//		if matches != Match8192 {
-	//			panic("invalid regex match")
-	//		}
-	//	}
-	//	buf.Reset()
-	//})
-	//
-	//b.Run("match regex 16384", func(b *testing.B) {
-	//	polyglot.Encoder(buf).String(Regex16384)
-	//	b.SetBytes(int64(len(Regex16384)))
-	//	b.ReportAllocs()
-	//	for i := 0; i < b.N; i++ {
-	//		out, err := plugin.Call("match_regex", buf.Bytes())
-	//		if err != nil {
-	//			panic(err)
-	//		}
-	//
-	//		dec := polyglot.GetDecoder(out)
-	//		matches, err := dec.String()
-	//		if err != nil {
-	//			panic(err)
-	//		}
-	//		dec.Return()
-	//
-	//		if matches != Match16384 {
-	//			panic("invalid regex match")
-	//		}
-	//	}
-	//	buf.Reset()
-	//})
-	//
-	//b.Run("match regex 32768", func(b *testing.B) {
-	//	polyglot.Encoder(buf).String(Regex32768)
-	//	b.SetBytes(int64(len(Regex32768)))
-	//	b.ReportAllocs()
-	//	for i := 0; i < b.N; i++ {
-	//		out, err := plugin.Call("match_regex", buf.Bytes())
-	//		if err != nil {
-	//			panic(err)
-	//		}
-	//
-	//		dec := polyglot.GetDecoder(out)
-	//		matches, err := dec.String()
-	//		if err != nil {
-	//			panic(err)
-	//		}
-	//		dec.Return()
-	//
-	//		if matches != Match32768 {
-	//			panic("invalid regex match")
-	//		}
-	//	}
-	//	buf.Reset()
-	//})
+	b.Run("match regex 4096", func(b *testing.B) {
+		polyglot.Encoder(buf).String(Regex4096)
+		b.SetBytes(int64(len(Regex4096)))
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			out, err := plugin.Call("match_regex", buf.Bytes())
+			if err != nil {
+				panic(err)
+			}
+
+			dec := polyglot.GetDecoder(out)
+			matches, err := dec.String()
+			if err != nil {
+				panic(err)
+			}
+			dec.Return()
+
+			if matches != Match4096 {
+				panic("invalid regex match")
+			}
+		}
+		buf.Reset()
+	})
+
+	b.Run("match regex 8192", func(b *testing.B) {
+		polyglot.Encoder(buf).String(Regex8192)
+		b.SetBytes(int64(len(Regex8192)))
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			out, err := plugin.Call("match_regex", buf.Bytes())
+			if err != nil {
+				panic(err)
+			}
+
+			dec := polyglot.GetDecoder(out)
+			matches, err := dec.String()
+			if err != nil {
+				panic(err)
+			}
+			dec.Return()
+
+			if matches != Match8192 {
+				panic("invalid regex match")
+			}
+		}
+		buf.Reset()
+	})
+
+	b.Run("match regex 16384", func(b *testing.B) {
+		polyglot.Encoder(buf).String(Regex16384)
+		b.SetBytes(int64(len(Regex16384)))
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			out, err := plugin.Call("match_regex", buf.Bytes())
+			if err != nil {
+				panic(err)
+			}
+
+			dec := polyglot.GetDecoder(out)
+			matches, err := dec.String()
+			if err != nil {
+				panic(err)
+			}
+			dec.Return()
+
+			if matches != Match16384 {
+				panic("invalid regex match")
+			}
+		}
+		buf.Reset()
+	})
+
+	b.Run("match regex 32768", func(b *testing.B) {
+		polyglot.Encoder(buf).String(Regex32768)
+		b.SetBytes(int64(len(Regex32768)))
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			out, err := plugin.Call("match_regex", buf.Bytes())
+			if err != nil {
+				panic(err)
+			}
+
+			dec := polyglot.GetDecoder(out)
+			matches, err := dec.String()
+			if err != nil {
+				panic(err)
+			}
+			dec.Return()
+
+			if matches != Match32768 {
+				panic("invalid regex match")
+			}
+		}
+		buf.Reset()
+	})
 }
 
 func BenchmarkNativeGo(b *testing.B) {

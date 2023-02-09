@@ -1,3 +1,5 @@
 .idea
 .DS_Store
 text_signature-*
+target
+Cargo.lock
