@@ -30,6 +30,7 @@ import (
 	"github.com/loopholelabs/scalefile/scalefunc"
 	"github.com/valyala/fasthttp"
 	"log"
+	"net"
 	"os"
 	"os/exec"
 	"sync"
@@ -165,14 +166,24 @@ func main() {
 
 		manifest := extism.Manifest{Wasm: []extism.Wasm{extism.WasmFile{Path: "../pkg/extism/rust/target/wasm32-unknown-unknown/release/rust.wasm"}}}
 
-		pool := &sync.Pool{
-			New: func() interface{} {
+		var extismPluginMu sync.RWMutex
+		extismPluginMap := make(map[string]extism.Plugin)
+
+		srv.ConnState = func(conn net.Conn, state fasthttp.ConnState) {
+			switch state {
+			case fasthttp.StateNew:
 				plugin, err := ctx.PluginFromManifest(manifest, []extism.Function{}, true)
 				if err != nil {
 					panic(err)
 				}
-				return plugin
-			},
+				extismPluginMu.Lock()
+				extismPluginMap[conn.RemoteAddr().String()] = plugin
+				extismPluginMu.Unlock()
+			case fasthttp.StateClosed:
+				extismPluginMu.Lock()
+				delete(extismPluginMap, conn.RemoteAddr().String())
+				extismPluginMu.Unlock()
+			}
 		}
 
 		srv.Handler = func(ctx *fasthttp.RequestCtx) {
@@ -181,12 +192,9 @@ func main() {
 			if len(b) > 0 {
 				buf := polyglot.GetBuffer()
 				polyglot.Encoder(buf).String(unsafe.String(&b[0], len(b)))
-				plugin, ok := pool.Get().(extism.Plugin)
-				if !ok {
-					ctx.SetStatusCode(fasthttp.StatusInternalServerError)
-					_, _ = ctx.WriteString("could not get plugin from pool")
-					return
-				}
+				extismPluginMu.RLock()
+				plugin := extismPluginMap[ctx.RemoteAddr().String()]
+				extismPluginMu.RUnlock()
 				out, err := plugin.Call("match_regex", buf.Bytes())
 				polyglot.PutBuffer(buf)
 				if err != nil {
@@ -203,7 +211,6 @@ func main() {
 					return
 				}
 				dec.Return()
-				pool.Put(plugin)
 				_, _ = ctx.WriteString(matches)
 			} else {
 				_, _ = ctx.WriteString("Hello, World!")
