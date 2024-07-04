@@ -7,7 +7,7 @@ require (
 	github.com/loopholelabs/polyglot-go v0.5.1
 	github.com/loopholelabs/scale v0.2.2
 	github.com/loopholelabs/scale-signature v0.2.1
-	github.com/loopholelabs/scalefile v0.1.4
+	github.com/loopholelabs/scalefile v0.1.9
 	github.com/stretchr/testify v1.8.1
 	github.com/valyala/fasthttp v1.44.0
 )
