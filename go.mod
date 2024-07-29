@@ -3,7 +3,6 @@ module github.com/loopholelabs/scale-benchmarks
 go 1.19
 
 require (
-	github.com/extism/extism v0.2.0
 	github.com/loopholelabs/polyglot-go v0.5.1
 	github.com/loopholelabs/scale v0.2.2
 	github.com/loopholelabs/scale-signature v0.2.1
